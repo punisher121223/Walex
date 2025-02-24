@@ -2,12 +2,66 @@
 <html lang="fa">
 <head>
     <meta charset="UTF-8">
-    <title>ولت‌های صرافی والکس</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>اطلاعات آدرس بیت‌کوین</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+            margin: 20px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 16px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
-    <h1>لیست ولت‌های صرافی والکس</h1>
-    <div id="walletList"></div>
-    <script src="script.js"></script>
+    <h1>اطلاعات آدرس بیت‌کوین</h1>
+    <div id="result"></div>
+    <script>
+        async function fetchWalletInfo(address) {
+            const apiUrl = `https://blockchain.info/rawaddr/${address}`;
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                const balance = data.final_balance / 100000000; // تبدیل ساتوشی به BTC
+                return {
+                    address: address,
+                    balance: balance,
+                    transactions: data.n_tx
+                };
+            } catch (error) {
+                return "خطا در اتصال به API بلاک‌چین";
+            }
+        }
+
+        // نمایش اطلاعات برای آدرس مشخص
+        async function displayWalletInfo() {
+            const address = "1KxcGM41Mx8FcxZBQJneYVLXHoStXk9KaJ";
+            const result = await fetchWalletInfo(address);
+            const resultDiv = document.getElementById("result");
+            if (typeof result === "string") {
+                resultDiv.innerHTML = result;
+            } else {
+                resultDiv.innerHTML = `
+                    <p><strong>آدرس:</strong> ${result.address}</p>
+                    <p><strong>موجودی:</strong> ${result.balance} BTC</p>
+                    <p><strong>تعداد تراکنش‌ها:</strong> ${result.transactions}</p>
+                `;
+            }
+        }
+
+        // وقتی صفحه لود می‌شه، اطلاعات رو نشون بده
+        window.onload = displayWalletInfo;
+    </script>
 </body>
 </html>
